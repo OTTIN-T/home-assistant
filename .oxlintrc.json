@@ -1,0 +1,12 @@
+{
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/.nuxt/**",
+    "**/.output/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/coverage/**",
+    "**/playwright-report/**",
+    "**/test-results/**"
+  ]
+}

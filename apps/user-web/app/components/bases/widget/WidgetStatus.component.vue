@@ -1,0 +1,21 @@
+<template>
+  <article class="widget status">
+    <h4>Status</h4>
+    <p>{{ label }}: {{ value }}</p>
+  </article>
+</template>
+
+<script setup lang="ts">
+defineProps<{
+  label: string;
+  value: string;
+}>();
+</script>
+
+<style scoped>
+.widget {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+</style>

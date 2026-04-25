@@ -1,0 +1,6 @@
+
+> user-web@ typecheck D:\home-assistant\apps\user-web
+> nuxt typecheck
+
+[36mÔä╣[39m Nuxt Icon server bundle mode is set to [36mlocal[39m
+npm warn Unknown env config "recursive". This will stop working in the next major version of npm.

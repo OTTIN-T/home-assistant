@@ -39,3 +39,8 @@
 - Decision: Adopter comme objectifs opérationnels p95 commande <= 400 ms (hors latence fournisseur), push <= 10 s pour 95% des événements, disponibilité mensuelle >= 99,9%.
 - Rationale: Dérivé des Success Criteria SC-004 et SC-006, avec marge opérationnelle réaliste pour V1.
 - Alternatives considered: Objectifs plus stricts en V1 rejetés car coût d'infrastructure disproportionné sans preuve de charge initiale.
+
+## Decision 9: Toolchain build/qualité avec Rolldown + OXC
+- Decision: Utiliser Rolldown comme bundler pour les packages partageables et remplacer ESLint/Prettier par Oxlint/Oxfmt pour le lint/format du monorepo.
+- Rationale: Rolldown apporte une API compatible Rollup avec performance native; Oxlint/Oxfmt fournit un outillage plus rapide avec diagnostics structurés, lint type-aware, analyse multi-fichiers et formatting intégré (tri imports, Tailwind classes, embedded formatting).
+- Alternatives considered: Maintenir ESLint/Prettier rejeté pour réduire le temps CI et simplifier la maintenance de la pile d'outillage.

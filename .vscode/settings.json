@@ -8,7 +8,18 @@
     },
     "chat.tools.terminal.autoApprove": {
         ".specify/scripts/bash/": true,
-        ".specify/scripts/powershell/": true
+        ".specify/scripts/powershell/": true,
+        "/^Set-Location apps/admin-web; npx nuxi typecheck$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd D:\\\\home-assistant\\\\apps\\\\admin-web; npx nuxi typecheck$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^npx nuxi typecheck$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
     }
 }
-

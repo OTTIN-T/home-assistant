@@ -12,7 +12,7 @@ Construire une plateforme web domotique sécurisée, orientée PWA, avec deux p�
 **Language Convention**: Documentation narrative can be French, but all code-oriented technical identifiers must be English (fields, schema names, endpoint names, OpenAPI tags/descriptions).
 
 **Language/Version**: TypeScript 5.x (strict), Node.js 20 LTS
-**Primary Dependencies**: Nuxt 3, Vue 3, Nuxt UI, Pinia, Zod, Supabase JS, Web Push (VAPID)
+**Primary Dependencies**: Nuxt 3, Vue 3, Nuxt UI, Pinia, Zod, Supabase JS, Web Push (VAPID), Rolldown, Oxlint, Oxfmt
 **Storage**: Supabase PostgreSQL + stockage objet pour assets widgets (si nécessaire)
 **Testing**: Vitest (unitaires), Playwright (intégration/E2E), tests de contrat API (OpenAPI + validation schéma)
 **Target Platform**: Web desktop/mobile (PWA installable), navigateurs modernes, backend Nuxt server
@@ -25,6 +25,10 @@ Construire une plateforme web domotique sécurisée, orientée PWA, avec deux p�
 - define SLI/SLO for monthly availability and track error budget burn rate
 - instrument user action completion time for SC-001 and push latency for SC-004
 - publish monthly availability report for SC-006 validation
+**Tooling Goals**:
+- reduce CI lint/format duration using OXC toolchain
+- enforce type-aware linting and multi-file analysis via Oxlint when rules require project context
+- standardize formatting with Oxfmt including built-in sorting capabilities
 **Constraints**:
 - accès réservé aux utilisateurs autorisés et appareils enregistrés
 - conservation journaux sécurité/audit 3 mois, puis purge

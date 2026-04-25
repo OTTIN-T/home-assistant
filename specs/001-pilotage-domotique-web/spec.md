@@ -5,6 +5,16 @@
 **Status**: Draft
 **Input**: User description: "Application web pour piloter la domotique de la maison, avec interface moderne, profils personnalisables, widgets, administration sécurisée, accès restreint et notifications push"
 
+## Clarifications
+
+### Session 2026-04-25
+
+- Q: Quel niveau d'isolation retenir pour le périmètre d'administration en V1? → A: Admin isolé dans une application/projet distinct dès la V1.
+- Q: Quelle stratégie de résolution choisir quand plusieurs commandes arrivent presque en même temps sur le même équipement? → A: Autoriser le parallèle et résoudre par priorité de rôle (admin > user).
+- Q: Quelle durée de rétention définir pour les événements de sécurité et d'audit? → A: 3 mois.
+- Q: Quel objectif de disponibilité mensuelle retenir pour la plateforme? → A: 99,9% de disponibilité mensuelle.
+- Q: Quelle stratégie adopter quand un fournisseur domotique tiers est indisponible? → A: Basculer en mode lecture seule pour les équipements impactés, avec message clair.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Contrôle Domotique Sécurisé (Priority: P1)
@@ -39,7 +49,7 @@ En tant qu'utilisateur autorisé, je configure des profils personnalisés et un 
 
 ### User Story 3 - Administration Isolée Et Gouvernance (Priority: P3)
 
-En tant qu'administrateur, je gère les autorisations, les appareils enregistrés et les paramètres de sécurité depuis un périmètre d'administration isolé afin de limiter les risques opérationnels.
+En tant qu'administrateur, je gère les autorisations, les appareils enregistrés et les paramètres de sécurité depuis une application d'administration distincte du périmètre utilisateur afin de limiter les risques opérationnels.
 
 **Why this priority**: Cette capacité protège le système, mais peut être livrée après le socle de contrôle utilisateur.
 
@@ -55,8 +65,8 @@ En tant qu'administrateur, je gère les autorisations, les appareils enregistré
 ### Edge Cases
 
 - Que se passe-t-il si la connectivité réseau est intermittente pendant l'exécution d'une action domotique?
-- Comment le système réagit-il lorsqu'un équipement est indisponible ou renvoie un état incohérent?
-- Comment éviter les actions contradictoires lorsqu'un utilisateur déclenche plusieurs commandes rapprochées?
+- Lorsqu'un fournisseur domotique tiers est indisponible, les équipements impactés basculent en mode lecture seule avec message explicite.
+- En cas de commandes concurrentes sur un même équipement, l'ordre d'application est résolu par priorité de rôle (admin > user), avec journalisation des arbitrages.
 - Que se passe-t-il lorsqu'un profil contient des préférences incompatibles avec certains équipements?
 - Comment gérer la révocation immédiate d'un appareil précédemment autorisé en cours de session?
 
@@ -68,7 +78,7 @@ En tant qu'administrateur, je gère les autorisations, les appareils enregistré
 - **FR-002**: Le système doit permettre à un utilisateur autorisé de consulter et contrôler les équipements domotiques disponibles.
 - **FR-003**: Le système doit afficher un retour d'état explicite après chaque action de pilotage.
 - **FR-004**: Les utilisateurs doit pouvoir créer, modifier et activer des profils personnalisés.
-- **FR-005**: Le système doit journaliser les événements de sécurité et d'administration.
+- **FR-005**: Le système doit journaliser les événements de sécurité et d'administration avec une rétention de 3 mois.
 
 ### Mandatory Domain Requirements (Home Automation Web App)
 
@@ -76,10 +86,12 @@ En tant qu'administrateur, je gère les autorisations, les appareils enregistré
 - **FR-007**: Le système doit supporter la personnalisation du tableau de bord via des widgets configurables.
 - **FR-008**: Le système doit conserver les préférences et agencements personnalisés entre sessions.
 - **FR-009**: Le système doit permettre l'exécution de comportements domotiques différents selon le profil actif.
-- **FR-010**: Le système doit proposer un périmètre d'administration isolé du périmètre utilisateur standard.
+- **FR-010**: Le système doit proposer un périmètre d'administration isolé via une application/projet distinct dès la V1.
 - **FR-011**: Le système doit notifier l'utilisateur pour les événements domotiques importants nécessitant attention ou action.
 - **FR-012**: Le système doit maintenir une cohérence des données et règles entre profils, équipements et droits d'accès.
 - **FR-013**: Le système doit permettre l'ajout progressif de nouveaux équipements sans remise en cause du parcours utilisateur principal.
+- **FR-014**: Le système doit autoriser les commandes concurrentes sur un même équipement en appliquant une résolution par priorité de rôle (admin > user) et en traçant chaque arbitrage.
+- **FR-015**: En cas d'indisponibilité d'un fournisseur domotique tiers, le système doit basculer les équipements impactés en mode lecture seule avec message utilisateur explicite.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -93,8 +105,9 @@ En tant qu'administrateur, je gère les autorisations, les appareils enregistré
 ## Security & Access *(mandatory)*
 
 - Le cycle d'accès doit inclure authentification robuste, validation d'autorisation et contrôle de l'appareil utilisé.
-- Le périmètre d'administration doit appliquer des contrôles renforcés et séparés du parcours standard.
+- Le périmètre d'administration doit appliquer des contrôles renforcés dans une application/projet distinct du parcours standard.
 - Les accès refusés, changements de droits et actions sensibles doivent être journalisés avec traçabilité exploitable.
+- Les journaux de sécurité et d'audit doivent être conservés pendant 3 mois, puis purgés selon la politique de conservation.
 - Le système doit prévoir la révocation d'accès utilisateur/appareil avec effet rapide.
 - Le système doit protéger les données sensibles en transit et au repos selon les pratiques de sécurité du domaine.
 
@@ -121,6 +134,7 @@ En tant qu'administrateur, je gère les autorisations, les appareils enregistré
 - **SC-003**: 90% des utilisateurs configurent un profil et au moins un widget sans assistance lors du premier usage.
 - **SC-004**: 95% des notifications d'événements prioritaires sont livrées en moins de 10 secondes.
 - **SC-005**: Le taux de réussite des parcours critiques (connexion autorisée, action équipement, application profil) est d'au moins 99% sur l'environnement cible.
+- **SC-006**: La disponibilité mensuelle de la plateforme est d'au moins 99,9%.
 
 ## Assumptions
 

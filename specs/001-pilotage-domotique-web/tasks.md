@@ -176,17 +176,17 @@ description: "Liste des tâches d'implémentation — Pilotage Domotique Web"
 
 **Objectif** : Qualité finale, conformité constitution, validation quickstart, purge des événements expirés.
 
-- [ ] T074 [P] Implémenter la politique de rétention et purge automatique des `SecurityEvent` à 90 jours dans `apps/shared/security/retention.service.ts`
-- [ ] T075 [P] Valider la conformité à la constitution : architecture composants, TypeScript strict, isolation admin, PWA, tests traçables par exigence FR
-- [ ] T076 [P] Ajouter les politiques RLS Supabase pour toutes les tables (accès limité aux utilisateurs authentifiés et aux rôles autorisés) dans `apps/shared/schemas/migrations/004_rls_policies.sql`
-- [ ] T077 [P] Configurer le monitoring des performances (p95 commande <= 400 ms, push <= 10 s) dans `apps/user-web/server/plugins/performance.plugin.ts`
-- [ ] T078 Valider les 5 parcours du quickstart.md (succès connexion/commande, refus appareil, warning fournisseur, personnalisation, administration isolée)
-- [ ] T079 [P] Mettre à jour le README monorepo et les guides de développement dans `README.md`
-- [ ] T080 [P] Definir les SLI/SLO de disponibilite mensuelle et le suivi d'error budget dans `apps/shared/observability/slo.availability.md`
-- [ ] T081 [P] Implementer la collecte uptime par surface API (auth, devices, profiles, admin) dans `apps/shared/observability/uptime.collector.ts`
-- [ ] T082 [P] Configurer l'alerting disponibilite (burn-rate) dans `apps/shared/observability/alerts.availability.yml`
-- [ ] T083 Implementer la generation du rapport mensuel de disponibilite (objectif >= 99.9%) dans `apps/shared/observability/monthly-availability.report.ts`
-- [ ] T087 [P] Instrumenter le parcours utilisateur de base (connexion -> action -> retour d'etat) pour mesurer SC-001 dans `apps/user-web/app/composables/useUserJourneyMetrics.ts` et `apps/user-web/server/plugins/user-journey-metrics.plugin.ts`
+- [x] T074 [P] Implémenter la politique de rétention et purge automatique des `SecurityEvent` à 90 jours dans `apps/shared/security/retention.service.ts`
+- [x] T075 [P] Valider la conformité à la constitution : architecture composants, TypeScript strict, isolation admin, PWA, tests traçables par exigence FR
+- [x] T076 [P] Ajouter les politiques RLS Supabase pour toutes les tables (accès limité aux utilisateurs authentifiés et aux rôles autorisés) dans `apps/shared/schemas/migrations/004_rls_policies.sql`
+- [x] T077 [P] Configurer le monitoring des performances (p95 commande <= 400 ms, push <= 10 s) dans `apps/user-web/server/plugins/performance.plugin.ts`
+- [x] T078 Valider les 5 parcours du quickstart.md (succès connexion/commande, refus appareil, warning fournisseur, personnalisation, administration isolée)
+- [x] T079 [P] Mettre à jour le README monorepo et les guides de développement dans `README.md`
+- [x] T080 [P] Definir les SLI/SLO de disponibilite mensuelle et le suivi d'error budget dans `apps/shared/observability/slo.availability.md`
+- [x] T081 [P] Implementer la collecte uptime par surface API (auth, devices, profiles, admin) dans `apps/shared/observability/uptime.collector.ts`
+- [x] T082 [P] Configurer l'alerting disponibilite (burn-rate) dans `apps/shared/observability/alerts.availability.yml`
+- [x] T083 Implementer la generation du rapport mensuel de disponibilite (objectif >= 99.9%) dans `apps/shared/observability/monthly-availability.report.ts`
+- [x] T087 [P] Instrumenter le parcours utilisateur de base (connexion -> action -> retour d'etat) pour mesurer SC-001 dans `apps/user-web/app/composables/useUserJourneyMetrics.ts` et `apps/user-web/server/plugins/user-journey-metrics.plugin.ts`
 
 ---
 
@@ -280,7 +280,31 @@ Les modèles/services marqués `[P]` peuvent être développés simultanément (
 
 | Requirement | Task IDs | Notes |
 |-------------|----------|-------|
-| FR-011 | T051, T057, T084, T085, T086 | Couvre abonnement push + priorisation + dispatch + validation |
-| SC-001 | T023, T077, T087 | Couvre test parcours, monitoring performance et instrumentation explicite utilisateur |
-| SC-004 | T039, T051, T057, T086 | Couvre schema, abonnement, envoi prioritaire et tests |
-| SC-006 | T080, T081, T082, T083 | Couvre SLI/SLO, collecte uptime, alerting et reporting mensuel |
+| FR-001 | T015, T018, T020, T024, T027, T029 | Controle utilisateur + appareil et refus traces |
+| FR-002 | T019, T026, T030, T033, T035, T036 | Consultation et commande des equipements |
+| FR-003 | T019, T028, T031, T077 | Statut explicite apres action et suivi performance |
+| FR-004 | T038, T040, T045, T048, T049, T052, T055 | Gestion complete des profils |
+| FR-005 | T016, T060, T069, T074 | Journalisation securite et retention |
+| FR-006 | T015, T058, T061, T064, T067 | RBAC utilisateur/admin |
+| FR-007 | T041, T046, T053, T054 | Widgets configurables |
+| FR-008 | T043, T050, T056 | Persistance inter-sessions |
+| FR-009 | T042, T047, T055, T056 | Regles selon profil actif |
+| FR-010 | T003, T064, T067, T068, T069, T070, T071, T072, T073 | Administration isolee |
+| FR-011 | T051, T057, T084, T085, T086 | Priorisation et dispatch notifications |
+| FR-012 | T040, T041, T019, T021, T022, T028, T088 | Coherence metier et invariants |
+| FR-013 | T012, T013, T014, T019, T039, T059, T060 | Evolution equipements sans rupture contrats/parcours |
+| FR-014 | T019, T021, T028 | Arbitrage concurrence admin > user |
+| FR-015 | T019, T022, T025, T026, T036 | Mode read_only en indisponibilite fournisseur |
+| SC-001 | T023, T077, T087 | Parcours utilisateur de base instrumente |
+| SC-002 | T018, T024, T058, T061, T064, T069 | Blocage et tracage des acces non autorises |
+| SC-004 | T039, T051, T057, T084, T085, T086 | Livraison prioritaire notifications |
+| SC-006 | T080, T081, T082, T083 | SLI/SLO, alerting et reporting disponibilite |
+
+## Mapping Invariants -> Tasks
+
+| Invariant | Task IDs | Notes |
+|-----------|----------|-------|
+| INV-001 (un seul profil actif) | T038, T040, T045, T049 | Verifie en contrat + unitaire + endpoint |
+| INV-002 (commande rejected/arbitrated -> SecurityEvent) | T019, T021, T028 | Contrat et service de commande couvrent la trace |
+| INV-003 (read_only bloque mutation) | T019, T022, T025, T028 | Contrat + provider + commande |
+| INV-004 (revocation invalide sessions < 10s) | T059, T062, T066, T068, T088 | Couverture contrat, service, endpoint et integration latence |

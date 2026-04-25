@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-before-specify-hook`
 **Created**: 2026-04-25
-**Status**: Draft
+**Status**: Implemented
 **Input**: User description: "Application web pour piloter la domotique de la maison, avec interface moderne, profils personnalisables, widgets, administration sécurisée, accès restreint et notifications push"
 
 ## Clarifications

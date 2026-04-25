@@ -1,0 +1,401 @@
+openapi: 3.1.0
+info:
+  title: API Contracts - Home Automation Web Control
+  version: 1.0.0
+  description: |
+    HTTP contracts for V1: authentication, user+device access control,
+    device control, profile/widget personalization, and isolated administration.
+servers:
+  - url: https://api.home.local
+    description: Main API
+security:
+  - bearerAuth: []
+tags:
+  - name: Auth
+  - name: Devices
+  - name: Profiles
+  - name: Widgets
+  - name: Notifications
+  - name: Admin
+paths:
+  /v1/auth/session:
+    post:
+      tags: [ Auth ]
+      summary: Open a user session on a registered device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionCreateRequest"
+      responses:
+        "201":
+          description: Session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionCreateResponse"
+        "403":
+          description: User or device is not authorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /v1/devices:
+    get:
+      tags: [ Devices ]
+      summary: List devices visible to the user
+      responses:
+        "200":
+          description: Device list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Device"
+
+  /v1/devices/{deviceId}/commands:
+    post:
+      tags: [ Devices ]
+      summary: Submit a command for a device
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommandRequest"
+      responses:
+        "202":
+          description: Command accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandAccepted"
+        "409":
+          description: Conflict arbitrated (role priority)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandArbitrated"
+        "423":
+          description: Device is read-only (provider unavailable)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /v1/profiles:
+    post:
+      tags: [ Profiles ]
+      summary: Create a user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileCreateRequest"
+      responses:
+        "201":
+          description: Profile created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+
+  /v1/profiles/{profileId}/activate:
+    post:
+      tags: [ Profiles ]
+      summary: Activate a profile (and deactivate other profiles for the same user)
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Profile activated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+
+  /v1/widgets/layout:
+    put:
+      tags: [ Widgets ]
+      summary: Save widget layout for the active profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WidgetsConfigurationRequest"
+      responses:
+        "200":
+          description: Layout saved
+
+  /v1/notifications/subscriptions:
+    post:
+      tags: [ Notifications ]
+      summary: Register a Web Push subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PushSubscriptionRequest"
+      responses:
+        "201":
+          description: Subscription registered
+
+  /admin/v1/users/{userId}/roles:
+    patch:
+      tags: [ Admin ]
+      summary: Update user roles (isolated admin surface)
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRolesRequest"
+      responses:
+        "200":
+          description: Roles updated
+        "403":
+          description: Unauthorized action
+
+  /admin/v1/devices/{deviceId}/revoke:
+    post:
+      tags: [ Admin ]
+      summary: Revoke a registered device
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "202":
+          description: Revocation accepted
+
+  /admin/v1/audit/events:
+    get:
+      tags: [ Admin ]
+      summary: List security and audit events
+      parameters:
+        - name: severity
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [ info, warning, critical ]
+      responses:
+        "200":
+          description: Audit event list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SecurityEvent"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    SessionCreateRequest:
+      type: object
+      required: [ email, password, deviceFingerprint ]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 12
+        deviceFingerprint:
+          type: string
+
+    SessionCreateResponse:
+      type: object
+      required: [ token, userId, deviceId ]
+      properties:
+        token:
+          type: string
+        userId:
+          type: string
+          format: uuid
+        deviceId:
+          type: string
+          format: uuid
+
+    Device:
+      type: object
+      required: [ id, name, accessMode, state ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        accessMode:
+          type: string
+          enum: [ read_write, read_only ]
+        state:
+          type: object
+          additionalProperties: true
+
+    CommandRequest:
+      type: object
+      required: [ action, payload ]
+      properties:
+        action:
+          type: string
+        payload:
+          type: object
+          additionalProperties: true
+
+    CommandAccepted:
+      type: object
+      required: [ commandId, status ]
+      properties:
+        commandId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [ received, arbitrated, executed ]
+
+    CommandArbitrated:
+      type: object
+      required: [ commandId, status, reason ]
+      properties:
+        commandId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [ rejected ]
+        reason:
+          type: string
+
+    ProfileCreateRequest:
+      type: object
+      required: [ name, uiPreferences ]
+      properties:
+        name:
+          type: string
+          minLength: 2
+        uiPreferences:
+          type: object
+          additionalProperties: true
+
+    Profile:
+      type: object
+      required: [ id, name, isActive ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        isActive:
+          type: boolean
+
+    WidgetsConfigurationRequest:
+      type: object
+      required: [ widgets ]
+      properties:
+        widgets:
+          type: array
+          items:
+            type: object
+            required: [ widgetType, position, visible ]
+            properties:
+              widgetType:
+                type: string
+              position:
+                type: integer
+                minimum: 0
+              visible:
+                type: boolean
+              parameters:
+                type: object
+                additionalProperties: true
+
+    PushSubscriptionRequest:
+      type: object
+      required: [ endpoint, keys ]
+      properties:
+        endpoint:
+          type: string
+          format: uri
+        keys:
+          type: object
+          required: [ p256dh, auth ]
+          properties:
+            p256dh:
+              type: string
+            auth:
+              type: string
+
+    UpdateRolesRequest:
+      type: object
+      required: [ role ]
+      properties:
+        role:
+          type: string
+          enum: [ admin, user ]
+
+    SecurityEvent:
+      type: object
+      required: [ id, eventType, severity, createdAt, expiresAt ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        eventType:
+          type: string
+        severity:
+          type: string
+          enum: [ info, warning, critical ]
+        details:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      required: [ code, message ]
+      properties:
+        code:
+          type: string
+        message:
+          type: string

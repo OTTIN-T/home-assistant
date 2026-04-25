@@ -1,8 +1,8 @@
 # Feature Specification: [FEATURE NAME]
 
-**Feature Branch**: `[###-feature-name]`  
-**Created**: [DATE]  
-**Status**: Draft  
+**Feature Branch**: `[###-feature-name]`
+**Created**: [DATE]
+**Status**: Draft
 **Input**: User description: "$ARGUMENTS"
 
 ## User Scenarios & Testing *(mandatory)*
@@ -11,7 +11,7 @@
   IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
   Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
   you should still have a viable MVP (Minimum Viable Product) that delivers value.
-  
+
   Assign priorities (P1, P2, P3, etc.) to each story, where P1 is the most critical.
   Think of each story as a standalone slice of functionality that can be:
   - Developed independently
@@ -85,10 +85,21 @@
 ### Functional Requirements
 
 - **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]
-- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]  
+- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]
 - **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
 - **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
 - **FR-005**: System MUST [behavior, e.g., "log all security events"]
+
+### Mandatory Domain Requirements (Home Automation Web App)
+
+- **FR-006**: System MUST implement role-based access with authorized users and registered devices only.
+- **FR-007**: System MUST provide user profiles with customizable preferences and behavior rules.
+- **FR-008**: System MUST support widget-based dashboard composition (add, remove, reorder, configure).
+- **FR-009**: System MUST expose secure API endpoints for device control and profile-driven automation.
+- **FR-010**: System MUST provide an isolated administration surface (logical or separate project) with stronger controls.
+- **FR-011**: System MUST support push notifications for actionable domotic events.
+- **FR-012**: System MUST preserve strict typing across frontend and backend contracts.
+- **FR-013**: System MUST define compatibility strategy for integrating new devices/providers incrementally.
 
 *Example of marking unclear requirements:*
 
@@ -99,6 +110,36 @@
 
 - **[Entity 1]**: [What it represents, key attributes without implementation]
 - **[Entity 2]**: [What it represents, relationships to other entities]
+
+Recommended entities for this domain:
+
+- **UserProfile**: user identity, permissions, personalization settings, behavior policies.
+- **RegisteredDevice**: known user devices allowed to access the app.
+- **HomeDevice**: connected domotic device (type, provider, capabilities, status).
+- **WidgetConfig**: dashboard widget configuration and layout metadata.
+- **AutomationRule**: rule linking profile/context to domotic actions.
+- **SecurityEvent**: auditable security log entry.
+
+## Security & Access *(mandatory)*
+
+- Authentication method(s), session lifecycle and credential hardening
+- Authorization model (roles/scopes) and admin perimeter isolation
+- Device registration and trusted-device policy
+- Abuse protection, rate limiting, and audit logging expectations
+- Data protection requirements (at rest/in transit) and incident response basics
+
+## UX & Personalization *(mandatory)*
+
+- Key UX principles (clarity, simplicity, modern look, feedback and recoverability)
+- Personalization scope (profiles, dashboard layout, widget preferences)
+- Accessibility baseline and responsive behavior assumptions
+
+## Test Strategy *(mandatory)*
+
+- Define unit, integration and contract test scope for each user story
+- Include success, error and warning scenarios for critical paths
+- Define measurable coverage targets and pass/fail quality gates
+- Require independent testability for each prioritized user story
 
 ## Success Criteria *(mandatory)*
 

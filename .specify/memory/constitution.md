@@ -82,7 +82,7 @@ Rationale: le parc domotique et les usages évoluent continuellement.
 ## Standards Techniques et Architecture
 
 - Stack normative: Vue 3 + Nuxt 3 + Nuxt UI + Zod.
-- Langue des artefacts techniques: tout artefact oriente code doit etre redige en anglais (exemples: OpenAPI, data model, contracts, schemas, noms de champs, descriptions, tags, exemples, payloads).
+- Langue des artefacts techniques: les identifiants techniques doivent etre en anglais pour tout artefact oriente code (exemples: noms de champs, schemas, tags OpenAPI, payloads, noms d'entites, noms d'endpoints). La narration documentaire peut rester en francais.
 - API: endpoints Nuxt server routes en priorité, avec séparation claire des couches.
 - Données: Supabase est le choix par défaut si les contraintes de sécurité,
 	conformité et scalabilité sont respectées; toute alternative doit être motivée
@@ -120,4 +120,4 @@ Toute modification doit:
 Une revue de conformité doit être effectuée pour chaque feature à la création du plan,
 à la génération des tâches, puis avant livraison.
 
-**Version**: 1.1.0 | **Ratified**: 2026-04-25 | **Last Amended**: 2026-04-25
+**Version**: 1.2.0 | **Ratified**: 2026-04-25 | **Last Amended**: 2026-04-25

@@ -64,11 +64,11 @@ En tant qu'administrateur, je gère les autorisations, les appareils enregistré
 
 ### Edge Cases
 
-- Que se passe-t-il si la connectivité réseau est intermittente pendant l'exécution d'une action domotique?
+- En cas de connectivite intermittente pendant une commande, si la reconnexion intervient en moins de 30 secondes, le systeme doit reconcilier la commande et afficher l'etat final avec un statut `reconciled`.
 - Lorsqu'un fournisseur domotique tiers est indisponible, les équipements impactés basculent en mode lecture seule avec message explicite.
 - En cas de commandes concurrentes sur un même équipement, l'ordre d'application est résolu par priorité de rôle (admin > user), avec journalisation des arbitrages.
-- Que se passe-t-il lorsqu'un profil contient des préférences incompatibles avec certains équipements?
-- Comment gérer la révocation immédiate d'un appareil précédemment autorisé en cours de session?
+- Lorsqu'un profil contient des preferences incompatibles avec un equipement, le systeme doit ignorer uniquement la preference non supportee, afficher un warning utilisateur, et journaliser un `SecurityEvent` de severite `warning`.
+- Lorsqu'un appareil est revoque pendant une session active, la session doit etre invalidee en moins de 10 secondes, puis toute action ulterieure doit retourner une erreur d'autorisation.
 
 ## Requirements *(mandatory)*
 
@@ -76,7 +76,7 @@ En tant qu'administrateur, je gère les autorisations, les appareils enregistré
 
 - **FR-001**: Le système doit permettre l'accès uniquement aux utilisateurs autorisés et aux appareils enregistrés.
 - **FR-002**: Le système doit permettre à un utilisateur autorisé de consulter et contrôler les équipements domotiques disponibles.
-- **FR-003**: Le système doit afficher un retour d'état explicite après chaque action de pilotage.
+- **FR-003**: Le systeme doit afficher apres chaque action de pilotage un statut explicite parmi `accepted`, `executed`, `rejected`, `failed`, `reconciled`, avec horodatage, en moins de 2 secondes dans 95% des cas.
 - **FR-004**: Les utilisateurs doit pouvoir créer, modifier et activer des profils personnalisés.
 - **FR-005**: Le système doit journaliser les événements de sécurité et d'administration avec une rétention de 3 mois.
 
@@ -87,11 +87,18 @@ En tant qu'administrateur, je gère les autorisations, les appareils enregistré
 - **FR-008**: Le système doit conserver les préférences et agencements personnalisés entre sessions.
 - **FR-009**: Le système doit permettre l'exécution de comportements domotiques différents selon le profil actif.
 - **FR-010**: Le système doit proposer un périmètre d'administration isolé via une application/projet distinct dès la V1.
-- **FR-011**: Le système doit notifier l'utilisateur pour les événements domotiques importants nécessitant attention ou action.
-- **FR-012**: Le système doit maintenir une cohérence des données et règles entre profils, équipements et droits d'accès.
-- **FR-013**: Le système doit permettre l'ajout progressif de nouveaux équipements sans remise en cause du parcours utilisateur principal.
+- **FR-011**: Le systeme doit classifier les evenements domotiques (`critical`, `warning`, `info`), appliquer des regles de priorisation, et declencher les notifications utilisateur selon la politique active.
+- **FR-012**: Le systeme doit maintenir une coherence des donnees et regles entre profils, equipements et droits d'acces, en appliquant des invariants metier explicites.
+- **FR-013**: Le systeme doit permettre l'ajout progressif de nouveaux equipements sans remise en cause du parcours utilisateur principal, avec integration d'un nouveau type d'equipement sans modification des parcours US1 ni rupture des contrats API existants.
 - **FR-014**: Le système doit autoriser les commandes concurrentes sur un même équipement en appliquant une résolution par priorité de rôle (admin > user) et en traçant chaque arbitrage.
 - **FR-015**: En cas d'indisponibilité d'un fournisseur domotique tiers, le système doit basculer les équipements impactés en mode lecture seule avec message utilisateur explicite.
+
+### Consistency Invariants
+
+- **INV-001**: Un seul profil peut etre actif a la fois par utilisateur.
+- **INV-002**: Une commande `rejected` ou `arbitrated` doit produire un `SecurityEvent` associe.
+- **INV-003**: Un equipement en mode `read_only` ne peut pas accepter de commande de modification d'etat.
+- **INV-004**: La revocation d'un appareil invalide les sessions actives associees en moins de 10 secondes.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -108,7 +115,7 @@ En tant qu'administrateur, je gère les autorisations, les appareils enregistré
 - Le périmètre d'administration doit appliquer des contrôles renforcés dans une application/projet distinct du parcours standard.
 - Les accès refusés, changements de droits et actions sensibles doivent être journalisés avec traçabilité exploitable.
 - Les journaux de sécurité et d'audit doivent être conservés pendant 3 mois, puis purgés selon la politique de conservation.
-- Le système doit prévoir la révocation d'accès utilisateur/appareil avec effet rapide.
+- Le systeme doit prevoir la revocation d'acces utilisateur/appareil avec invalidation effective en moins de 10 secondes.
 - Le système doit protéger les données sensibles en transit et au repos selon les pratiques de sécurité du domaine.
 
 ## UX & Personalization *(mandatory)*

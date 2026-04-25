@@ -9,6 +9,8 @@ Construire une plateforme web domotique sécurisée, orientée PWA, avec deux p�
 
 ## Technical Context
 
+**Language Convention**: Documentation narrative can be French, but all code-oriented technical identifiers must be English (fields, schema names, endpoint names, OpenAPI tags/descriptions).
+
 **Language/Version**: TypeScript 5.x (strict), Node.js 20 LTS
 **Primary Dependencies**: Nuxt 3, Vue 3, Nuxt UI, Pinia, Zod, Supabase JS, Web Push (VAPID)
 **Storage**: Supabase PostgreSQL + stockage objet pour assets widgets (si nécessaire)
@@ -19,6 +21,10 @@ Construire une plateforme web domotique sécurisée, orientée PWA, avec deux p�
 - p95 API de commande équipement <= 400 ms (hors latence fournisseur tiers)
 - livraison notification push prioritaire <= 10 s pour 95% des événements
 - disponibilité mensuelle >= 99,9%
+**Observability Goals**:
+- define SLI/SLO for monthly availability and track error budget burn rate
+- instrument user action completion time for SC-001 and push latency for SC-004
+- publish monthly availability report for SC-006 validation
 **Constraints**:
 - accès réservé aux utilisateurs autorisés et appareils enregistrés
 - conservation journaux sécurité/audit 3 mois, puis purge

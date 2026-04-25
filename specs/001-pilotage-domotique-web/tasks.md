@@ -11,6 +11,8 @@ description: "Liste des tâches d'implémentation — Pilotage Domotique Web"
 
 **Organisation**: Tâches groupées par user story pour permettre une implémentation et des tests indépendants par story.
 
+**Convention linguistique**: La narration peut rester en francais, mais les identifiants techniques orientes code doivent etre en anglais (schemas, champs, tags, endpoints, payloads).
+
 ## Format: `- [ ] T### [P] [US#] Description avec chemin`
 
 - **[P]** : Peut s'exécuter en parallèle (fichiers différents, sans dépendance sur une tâche incomplète de la même phase)
@@ -127,6 +129,9 @@ description: "Liste des tâches d'implémentation — Pilotage Domotique Web"
 - [ ] T055 [US2] Implémenter le store Pinia `useProfileStore` (profil actif, liste, activation) dans `apps/user-web/app/stores/profile.store.ts`
 - [ ] T056 [US2] Implémenter le composable `useProfilePersonalization` (appel API, synchronisation store) dans `apps/user-web/app/composables/useProfilePersonalization.ts`
 - [ ] T057 [US2] Implémenter le composable `usePushNotifications` (abonnement VAPID, gestion permission) dans `apps/user-web/app/composables/usePushNotifications.ts`
+- [ ] T084 [P] [US2] Implementer `EventPriorityService` (classification `critical`/`warning`/`info` et routage) dans `apps/user-web/server/services/event-priority.service.ts`
+- [ ] T085 [US2] Implementer `NotificationDispatchService` (emission, retry, dedup, TTL) dans `apps/user-web/server/services/notification-dispatch.service.ts`
+- [ ] T086 [P] [US2] Ajouter les tests de contrat et d'integration de priorisation notifications dans `apps/user-web/tests/contract/notifications-priority.contract.test.ts` et `apps/user-web/tests/integration/notifications-priority.spec.ts`
 
 **Checkpoint** : L'application utilisateur permet la gestion complète des profils et widgets. La personnalisation persiste entre sessions. Les notifications push sont enregistrables.
 
@@ -148,6 +153,7 @@ description: "Liste des tâches d'implémentation — Pilotage Domotique Web"
 - [ ] T061 [P] [US3] Tests unitaires succès/erreur/warning `AdminUserService` (changement de rôle, tentative par non-admin, `SecurityEvent` produit) dans `apps/admin-web/tests/unit/admin-user.service.test.ts`
 - [ ] T062 [P] [US3] Tests unitaires `AdminDeviceService` (révocation, invalidation sessions actives, idempotence si déjà révoqué) dans `apps/admin-web/tests/unit/admin-device.service.test.ts`
 - [ ] T063 [P] [US3] Tests d'intégration parcours modification droits + effet à la session suivante + révocation appareil + trace d'audit dans `apps/admin-web/tests/integration/admin-governance.spec.ts`
+- [ ] T088 [P] [US3] Test d'integration invalidation de session en moins de 10 secondes apres `POST /admin/v1/devices/{deviceId}/revoke` dans `apps/admin-web/tests/integration/device-revocation-latency.spec.ts`
 
 ### Implémentation — User Story 3
 
@@ -176,6 +182,11 @@ description: "Liste des tâches d'implémentation — Pilotage Domotique Web"
 - [ ] T077 [P] Configurer le monitoring des performances (p95 commande <= 400 ms, push <= 10 s) dans `apps/user-web/server/plugins/performance.plugin.ts`
 - [ ] T078 Valider les 5 parcours du quickstart.md (succès connexion/commande, refus appareil, warning fournisseur, personnalisation, administration isolée)
 - [ ] T079 [P] Mettre à jour le README monorepo et les guides de développement dans `README.md`
+- [ ] T080 [P] Definir les SLI/SLO de disponibilite mensuelle et le suivi d'error budget dans `apps/shared/observability/slo.availability.md`
+- [ ] T081 [P] Implementer la collecte uptime par surface API (auth, devices, profiles, admin) dans `apps/shared/observability/uptime.collector.ts`
+- [ ] T082 [P] Configurer l'alerting disponibilite (burn-rate) dans `apps/shared/observability/alerts.availability.yml`
+- [ ] T083 Implementer la generation du rapport mensuel de disponibilite (objectif >= 99.9%) dans `apps/shared/observability/monthly-availability.report.ts`
+- [ ] T087 [P] Instrumenter le parcours utilisateur de base (connexion -> action -> retour d'etat) pour mesurer SC-001 dans `apps/user-web/app/composables/useUserJourneyMetrics.ts` et `apps/user-web/server/plugins/user-journey-metrics.plugin.ts`
 
 ---
 
@@ -204,9 +215,9 @@ Phase 1 (Setup)
 
 **US1** : Tests (T018–T024) ⇒ Services Provider+Device (T025–T026) ⇒ AuthService (T027) ⇒ DeviceCommandService (T028) ⇒ Endpoints (T029–T031) ⇒ UI + Store (T032–T037)
 
-**US2** : Tests (T038–T043) ⇒ Migrations (T044) ⇒ Services Profile+Widget (T045–T046) ⇒ BehaviorRuleService (T047) ⇒ Endpoints (T048–T051) ⇒ UI + Store (T052–T057)
+**US2** : Tests (T038–T043) ⇒ Migrations (T044) ⇒ Services Profile+Widget (T045–T046) ⇒ BehaviorRuleService (T047) ⇒ Endpoints (T048–T051) ⇒ UI + Store (T052–T057) ⇒ Priorisation/dispatch notifications (T084–T086)
 
-**US3** : Tests (T058–T063) ⇒ Middleware admin (T064) ⇒ Services Admin (T065–T066) ⇒ Endpoints (T067–T069) ⇒ UI + Store (T070–T073)
+**US3** : Tests (T058–T063, T088) ⇒ Middleware admin (T064) ⇒ Services Admin (T065–T066) ⇒ Endpoints (T067–T069) ⇒ UI + Store (T070–T073)
 
 ---
 
@@ -262,3 +273,14 @@ Les modèles/services marqués `[P]` peuvent être développés simultanément (
 | US1 | Connexion avec utilisateur+appareil autorisés → commande exécutée, état affiché ; refus avec appareil inconnu → `SecurityEvent` tracé |
 | US2 | Création profil → activation → widgets configurés → reconnexion → configuration restituée |
 | US3 | Changement de rôle admin → effet à la session suivante ; révocation appareil → sessions invalidées + trace d'audit consultable |
+
+---
+
+## Mapping FR/SC -> Tasks
+
+| Requirement | Task IDs | Notes |
+|-------------|----------|-------|
+| FR-011 | T051, T057, T084, T085, T086 | Couvre abonnement push + priorisation + dispatch + validation |
+| SC-001 | T023, T077, T087 | Couvre test parcours, monitoring performance et instrumentation explicite utilisateur |
+| SC-004 | T039, T051, T057, T086 | Couvre schema, abonnement, envoi prioritaire et tests |
+| SC-006 | T080, T081, T082, T083 | Couvre SLI/SLO, collecte uptime, alerting et reporting mensuel |

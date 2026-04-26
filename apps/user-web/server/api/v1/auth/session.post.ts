@@ -1,6 +1,24 @@
-import { createError, defineEventHandler, readBody } from "h3";
+import { createError, defineEventHandler } from "h3";
 import type { SessionCreateRequest, SessionCreateResponse } from "@home-assistant/shared";
 import { createRuntimeDeps } from "../../../services/runtime-deps";
+
+async function readJsonBody<T>(event: unknown): Promise<T | null> {
+  const req = (event as { node?: { req?: AsyncIterable<Buffer | string> } }).node?.req;
+  if (!req) {
+    return null;
+  }
+
+  let raw = "";
+  for await (const chunk of req) {
+    raw += typeof chunk === "string" ? chunk : chunk.toString("utf8");
+  }
+
+  if (!raw.trim()) {
+    return null;
+  }
+
+  return JSON.parse(raw) as T;
+}
 
 export async function createAuthSession(
   payload: SessionCreateRequest,
@@ -21,7 +39,13 @@ export async function createAuthSession(
 }
 
 export default defineEventHandler(async (event) => {
-  const payload = await readBody<SessionCreateRequest>(event);
+  let payload: SessionCreateRequest | null;
+  try {
+    payload = await readJsonBody<SessionCreateRequest>(event);
+  } catch {
+    throw createError({ statusCode: 400, statusMessage: "Invalid JSON body" });
+  }
+
   if (!payload) {
     throw createError({ statusCode: 400, statusMessage: "Missing request body" });
   }

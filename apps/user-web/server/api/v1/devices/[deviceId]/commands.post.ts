@@ -1,6 +1,24 @@
-import { createError, defineEventHandler, getRouterParam, readBody } from "h3";
+import { createError, defineEventHandler, getRouterParam } from "h3";
 import type { CommandRequest, CommandAccepted, CommandArbitrated, ErrorResponse } from "@home-assistant/shared";
 import { createRuntimeDeps } from "../../../../services/runtime-deps";
+
+async function readJsonBody<T>(event: unknown): Promise<T | null> {
+  const req = (event as { node?: { req?: AsyncIterable<Buffer | string> } }).node?.req;
+  if (!req) {
+    return null;
+  }
+
+  let raw = "";
+  for await (const chunk of req) {
+    raw += typeof chunk === "string" ? chunk : chunk.toString("utf8");
+  }
+
+  if (!raw.trim()) {
+    return null;
+  }
+
+  return JSON.parse(raw) as T;
+}
 
 export type CommandEndpointResult =
   | { statusCode: 202; body: CommandAccepted }
@@ -75,7 +93,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: "Missing authentication context" });
   }
 
-  const command = await readBody<CommandRequest>(event);
+  let command: CommandRequest | null;
+  try {
+    command = await readJsonBody<CommandRequest>(event);
+  } catch {
+    throw createError({ statusCode: 400, statusMessage: "Invalid JSON body" });
+  }
+
   if (!command) {
     throw createError({ statusCode: 400, statusMessage: "Missing request body" });
   }

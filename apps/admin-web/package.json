@@ -1,33 +1,33 @@
 {
-  "name": "admin-web",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "nuxt dev --port 3001",
-    "build": "nuxt build",
-    "preview": "nuxt preview --port 3001",
-    "test": "vitest run",
-    "typecheck": "nuxt typecheck",
-    "lint": "oxlint .",
-    "lint:fix": "oxlint . --fix",
-    "format": "oxfmt .",
-    "format:check": "oxfmt . --check"
-  },
-  "dependencies": {
-    "@home-assistant/shared": "workspace:*",
-    "@nuxt/ui": "^3.0.0",
-    "@pinia/nuxt": "^0.5.5",
-    "@supabase/supabase-js": "^2.50.0",
-    "h3": "^2.0.1-rc.20",
-    "nuxt": "^3.15.0",
-    "pinia": "^2.3.1",
-    "vue": "^3.5.13",
-    "zod": "^3.24.2"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.52.0",
-    "@types/node": "^22.13.9",
-    "typescript": "^5.8.2",
-    "vitest": "^3.0.8"
-  }
+    "name": "admin-web",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "nuxt dev --port 3001",
+        "build": "nuxt build",
+        "preview": "nuxt preview --port 3001",
+        "test": "vitest run",
+        "typecheck": "nuxt typecheck",
+        "lint": "oxlint .",
+        "lint:fix": "oxlint . --fix",
+        "format": "oxfmt .",
+        "format:check": "oxfmt . --check"
+    },
+    "dependencies": {
+        "@home-assistant/shared": "workspace:*",
+        "@nuxt/ui": "^4.7.0",
+        "@pinia/nuxt": "^0.11.3",
+        "@supabase/supabase-js": "^2.50.0",
+        "nuxt": "^4.4.2",
+        "pinia": "^3.0.4",
+        "vue": "^3.5.13",
+        "zod": "^3.24.2"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.52.0",
+        "@types/node": "^22.13.9",
+        "typescript": "^5.8.2",
+        "vitest": "^3.0.8",
+        "vue-tsc": "^3.2.7"
+    }
 }

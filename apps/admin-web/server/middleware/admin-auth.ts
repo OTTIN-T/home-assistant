@@ -1,4 +1,4 @@
-import { createError, defineEventHandler, getRequestHeader } from "h3";
+import { createError, defineEventHandler } from "h3";
 
 export interface AdminAuthContext {
   userId: string;
@@ -35,8 +35,36 @@ function decodeJwtPayload<T>(token: string): T {
   return decodeBase64Url<T>(payloadPart);
 }
 
+function getHeaderValue(event: unknown, name: string): string | undefined {
+  const nodeHeaders = (event as { node?: { req?: { headers?: Record<string, string | string[] | undefined> } } }).node?.req?.headers;
+  if (!nodeHeaders) {
+    return undefined;
+  }
+
+  const value = nodeHeaders[name.toLowerCase()];
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+
+  return value;
+}
+
+function getRequestPath(event: unknown): string {
+  const rawUrl = (event as { node?: { req?: { url?: string } } }).node?.req?.url ?? "/";
+  return rawUrl.split("?")[0] ?? "/";
+}
+
+function shouldAuthenticate(requestPath: string): boolean {
+  return requestPath.startsWith("/api/admin/v1/");
+}
+
 export default defineEventHandler(async (event) => {
-  const bearerToken = parseBearerToken(getRequestHeader(event, "authorization"));
+  const requestPath = getRequestPath(event);
+  if (!shouldAuthenticate(requestPath)) {
+    return;
+  }
+
+  const bearerToken = parseBearerToken(getHeaderValue(event, "authorization"));
   if (!bearerToken) {
     throw createError({ statusCode: 401, statusMessage: "Missing authentication token" });
   }

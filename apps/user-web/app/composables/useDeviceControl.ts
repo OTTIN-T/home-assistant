@@ -5,8 +5,38 @@ export function useDeviceControl() {
   const store = useDeviceStore();
   const { devices, lastMessage } = storeToRefs(store);
 
+  function getAuthHeaders(): HeadersInit | null {
+    if (!import.meta.client) {
+      return null;
+    }
+
+    const token = localStorage.getItem("auth.token");
+    const deviceFingerprint = localStorage.getItem("auth.deviceFingerprint");
+    if (!token || !deviceFingerprint) {
+      return null;
+    }
+
+    return {
+      Authorization: `Bearer ${token}`,
+      "x-device-fingerprint": deviceFingerprint
+    };
+  }
+
   async function loadDevices() {
-    const response = await fetch("/api/v1/devices");
+    const headers = getAuthHeaders();
+    if (!headers) {
+      const error = new Error("Missing authentication context") as Error & { statusCode?: number };
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const response = await fetch("/api/v1/devices", { headers });
+    if (!response.ok) {
+      const error = new Error("Load devices failed") as Error & { statusCode?: number };
+      error.statusCode = response.status;
+      throw error;
+    }
+
     const data = (await response.json()) as Array<{
       id: string;
       name: string;

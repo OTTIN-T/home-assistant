@@ -1,9 +1,41 @@
 {
-  "name": "Home Automation User Web",
-  "short_name": "HA User",
+  "name": "Home Assistant Web Application",
+  "short_name": "HA Web",
+  "description": "Home automation web application with offline support and PWA capabilities",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#ffffff",
   "theme_color": "#0f766e",
-  "icons": []
+  "dir": "auto",
+  "lang": "fr-FR",
+  "screenshots": [
+    {
+      "src": "/icons/screenshot-mobile.png",
+      "sizes": "540x720",
+      "form_factor": "narrow",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "form_factor": "wide",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Appareils",
+      "short_name": "Devices",
+      "description": "Accès rapide à la liste des appareils",
+      "url": "/devices",
+      "icons": []
+    }
+  ],
+  "categories": [
+    "productivity"
+  ],
+  "icons": [],
+  "prefer_related_applications": false
 }

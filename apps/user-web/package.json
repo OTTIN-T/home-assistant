@@ -11,13 +11,17 @@
         "lint": "oxlint .",
         "lint:fix": "oxlint . --fix",
         "format": "oxfmt .",
-        "format:check": "oxfmt . --check"
+        "format:check": "oxfmt . --check",
+        "pwa:assets": "pwa-assets-generator --config pwa-assets.config.ts",
+        "pwa:validate": "npm run pwa:assets && npm run typecheck && npm run test"
     },
     "dependencies": {
         "@home-assistant/shared": "workspace:*",
         "@nuxt/ui": "^4.7.0",
         "@pinia/nuxt": "^0.11.3",
         "@supabase/supabase-js": "^2.50.0",
+        "@vite-pwa/assets-generator": "^1.0.2",
+        "@vite-pwa/nuxt": "^1.1.1",
         "nuxt": "^4.4.2",
         "pinia": "^3.0.4",
         "tailwindcss": "^4.2.4",
@@ -27,6 +31,8 @@
     "devDependencies": {
         "@playwright/test": "^1.52.0",
         "@types/node": "^22.13.9",
+        "h3": "2.0.1-rc.20",
+        "jsdom": "^29.0.2",
         "typescript": "^5.8.2",
         "vitest": "^3.0.8",
         "vue-tsc": "^3.2.7"

@@ -1,0 +1,254 @@
+openapi: 3.1.0
+info:
+  title: User Web PWA Operational API
+  version: 1.0.0
+  description: >-
+    Contrats API pour la configuration PWA de apps/user-web: consentement push,
+    synchronisation de file d'attente hors-ligne et journalisation des
+    evenements de cycle de vie PWA.
+servers:
+  - url: https://user-web.example.com
+    description: Production
+  - url: https://staging-user-web.example.com
+    description: Staging
+
+tags:
+  - name: PwaPush
+  - name: OfflineQueue
+  - name: PwaLifecycle
+
+paths:
+  /api/pwa/push-subscriptions:
+    post:
+      tags: [ PwaPush ]
+      summary: Enregistrer ou mettre a jour un abonnement push
+      operationId: registerPushSubscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PushSubscriptionUpsertRequest"
+      responses:
+        "201":
+          description: Abonnement push enregistre
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PushSubscriptionResponse"
+        "400":
+          description: Payload invalide
+        "401":
+          description: Non autorise
+        "409":
+          description: Conflit d'abonnement
+
+  /api/pwa/push-subscriptions/{subscriptionId}:
+    delete:
+      tags: [ PwaPush ]
+      summary: Revoquer un abonnement push
+      operationId: revokePushSubscription
+      parameters:
+        - name: subscriptionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Abonnement revoque
+        "401":
+          description: Non autorise
+        "404":
+          description: Abonnement introuvable
+
+  /api/pwa/offline-command-queue/sync:
+    post:
+      tags: [ OfflineQueue ]
+      summary: Synchroniser les commandes hors-ligne en file d'attente
+      operationId: syncOfflineCommandQueue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OfflineCommandQueueSyncRequest"
+      responses:
+        "200":
+          description: File synchronisee
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OfflineCommandQueueSyncResponse"
+        "400":
+          description: Payload de file invalide
+        "401":
+          description: Non autorise
+
+  /api/pwa/lifecycle-events:
+    post:
+      tags: [ PwaLifecycle ]
+      summary: Journaliser les evenements de cycle de vie PWA
+      operationId: recordPwaLifecycleEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PwaLifecycleEventRequest"
+      responses:
+        "202":
+          description: Evenement accepte
+        "400":
+          description: Payload d'evenement invalide
+        "401":
+          description: Non autorise
+
+components:
+  schemas:
+    PushSubscriptionUpsertRequest:
+      type: object
+      required:
+        - endpoint
+        - keys
+        - permissionStatus
+        - consentSource
+      properties:
+        endpoint:
+          type: string
+          format: uri
+        keys:
+          type: object
+          required: [ p256dh, auth ]
+          properties:
+            p256dh:
+              type: string
+            auth:
+              type: string
+        permissionStatus:
+          type: string
+          enum: [ default, granted, denied ]
+        consentSource:
+          type: string
+          enum: [ first_launch_prompt, settings ]
+
+    PushSubscriptionResponse:
+      type: object
+      required: [ subscriptionId, status ]
+      properties:
+        subscriptionId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [ active, revoked ]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    OfflineCommandQueueItem:
+      type: object
+      required:
+        - queueItemId
+        - deviceId
+        - commandName
+        - commandPayload
+        - queuedAt
+      properties:
+        queueItemId:
+          type: string
+          format: uuid
+        deviceId:
+          type: string
+          format: uuid
+        commandName:
+          type: string
+        commandPayload:
+          type: object
+          additionalProperties: true
+        queuedAt:
+          type: string
+          format: date-time
+        retryCount:
+          type: integer
+          minimum: 0
+        retryAfter:
+          type: string
+          format: date-time
+
+    OfflineCommandQueueSyncRequest:
+      type: object
+      required: [ correlationId, queueItems ]
+      properties:
+        correlationId:
+          type: string
+        queueItems:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/OfflineCommandQueueItem"
+
+    OfflineCommandQueueSyncResult:
+      type: object
+      required: [ queueItemId, status ]
+      properties:
+        queueItemId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [ synced, failed, conflict ]
+        reason:
+          type: string
+
+    OfflineCommandQueueSyncResponse:
+      type: object
+      required: [ correlationId, results ]
+      properties:
+        correlationId:
+          type: string
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/OfflineCommandQueueSyncResult"
+
+    PwaLifecycleEventRequest:
+      type: object
+      required:
+        - correlationId
+        - eventType
+        - eventStatus
+        - serviceWorkerVersion
+        - appVersion
+        - pwaModuleVersion
+      properties:
+        correlationId:
+          type: string
+        eventType:
+          type: string
+          enum:
+            - install_prompt_shown
+            - installed
+            - sw_registered
+            - sw_update_found
+            - sw_update_applied
+            - sw_activated
+            - sw_registration_error
+            - offline_queue_sync_started
+            - offline_queue_sync_finished
+        eventStatus:
+          type: string
+          enum: [ success, warning, error ]
+        serviceWorkerVersion:
+          type: string
+        appVersion:
+          type: string
+        pwaModuleVersion:
+          type: string
+        details:
+          type: object
+          additionalProperties: true

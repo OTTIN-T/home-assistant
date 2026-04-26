@@ -31,7 +31,7 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- [ ] Stack conforme: Vue 3 + Nuxt 3 + Nuxt UI, TypeScript strict activé
+- [ ] Stack conforme: Vue 3 + Nuxt 4.x + Nuxt UI, TypeScript strict activé
 - [ ] Architecture composants conforme: `components/bases`, `components/features`, `components/layouts`
 - [ ] Composants de base sans logique métier; logique en pages/composables/stores
 - [ ] Stratégie sécurité documentée: authn/authz, appareils autorisés, journalisation

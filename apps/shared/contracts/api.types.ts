@@ -76,6 +76,63 @@ export interface SecurityEventContract {
   expiresAt: string;
 }
 
+// PWA Contracts
+
+export interface PwaLifecycleEventRequest {
+  serviceWorkerVersion: string;
+  eventType:
+  | "install_prompt_shown"
+  | "installed"
+  | "sw_registered"
+  | "sw_update_found"
+  | "sw_update_applied"
+  | "sw_activated"
+  | "sw_registration_error"
+  | "offline_queue_sync_started"
+  | "offline_queue_sync_finished";
+  eventStatus: "success" | "warning" | "error";
+  details?: Record<string, any>;
+  timestamp: number;
+}
+
+export interface PwaLifecycleEventResponse {
+  success: boolean;
+  eventType: string;
+  message: string;
+}
+
+export interface OfflineCommand {
+  id: string;
+  commandName: string;
+  commandPayload: Record<string, any>;
+  status: "queued" | "syncing" | "synced" | "failed" | "conflict";
+  retryCount: number;
+  retryAfter?: number;
+  conflictReason?: string;
+  createdAt: number;
+  scheduledAt: number;
+  syncedAt?: number;
+}
+
+export interface OfflineQueueSyncRequest {
+  commands: OfflineCommand[];
+  correlationId: string;
+  timestamp: number;
+}
+
+export interface OfflineQueueSyncResponse {
+  synced: string[];
+  failed: { id: string; error: string }[];
+  conflicts: { id: string; reason: string }[];
+  correlationId: string;
+  timestamp: number;
+}
+
+export interface PushSubscriptionDeleteResponse {
+  success: boolean;
+  message: string;
+}
+
 export interface ErrorResponse {
   code: string;
   message: string;

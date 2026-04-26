@@ -1,22 +1,17 @@
 <!--
 Sync Impact Report
-- Version change: 0.0.0 -> 1.0.0
+- Version change: 1.2.0 -> 1.3.0 (MINOR: ajout du principe VI sur versioning)
 - Modified principles:
-	- [PRINCIPLE_1_NAME] -> I. Architecture Nuxt modulaire et strictement typée
-	- [PRINCIPLE_2_NAME] -> II. UX claire, moderne et personnalisable
-	- [PRINCIPLE_3_NAME] -> III. Sécurité par défaut et contrôle d'accès fort
-	- [PRINCIPLE_4_NAME] -> IV. Qualité par tests exhaustifs et traçables
-	- [PRINCIPLE_5_NAME] -> V. Extensibilité domotique et widgets évolutifs
+	- I. Architecture Nuxt modulaire et strictement typée (Nuxt 3 → Nuxt 4.x)
+	- Standards Techniques et Architecture (stack updated)
 - Added sections:
-	- Standards Techniques et Architecture
-	- Workflow Qualité et Livraison
+	- VI. Dépendances stables et versioning (@latest policy)
 - Removed sections:
 	- Aucune
 - Templates requiring updates:
 	- ✅ .specify/templates/plan-template.md
 	- ✅ .specify/templates/spec-template.md
 	- ✅ .specify/templates/tasks-template.md
-	- ⚠ pending (non applicable, dossier absent): .specify/templates/commands/*.md
 	- ✅ .github/copilot-instructions.md
 - Follow-up TODOs:
 	- Aucun
@@ -27,7 +22,7 @@ Sync Impact Report
 ## Core Principles
 
 ### I. Architecture Nuxt modulaire et strictement typée
-L'application doit utiliser Vue 3, Nuxt 3 et Nuxt UI comme socle principal.
+L'application doit utiliser Vue 3, Nuxt 4.x et Nuxt UI comme socle principal.
 Le code frontend et backend Nuxt doit rester strictement typé (TypeScript strict).
 La structure des composants doit suivre l'arborescence `components/bases`,
 `components/features`, `components/layouts`.
@@ -79,9 +74,23 @@ alternative applicative n'est acceptable que si elle justifie un gain net sur le
 contraintes de sécurité, UX et maintenance.
 Rationale: le parc domotique et les usages évoluent continuellement.
 
+### VI. Dépendances stables et versioning (@latest policy)
+Toutes les dépendances directes (Vue, Nuxt, @vite-pwa/nuxt, @vite-pwa/assets-generator,
+TypeScript, Zod, etc.) DOIVENT utiliser les versions stables les plus récentes disponibles
+sur la branche main et en production.
+La policy @latest stable implique: (a) monitorer les mises à jour de sécurité et
+performance, (b) appliquer les patches et minor versions sans délai injection, (c) évaluer
+et planifier les mises à jour MAJOR selon impact de rupture de compatibilité.
+Les dépendances de développement (ESLint, Vitest, Playwright, etc.) doivent également
+seguir cette politique pour garantir cohérence outils et détection de problèmes précoce.
+Rationale: cette discipline réduit la dette technique, améliore la sécurité applicative,
+et assure que les équipes opèrent toujours sur des fondations modernes et documentées.
+Cette décision est validée par la feature 002-configurer-nuxt-pwa et le profil technique
+actuel du projet.
+
 ## Standards Techniques et Architecture
 
-- Stack normative: Vue 3 + Nuxt 3 + Nuxt UI + Zod.
+- Stack normative: Vue 3 + Nuxt 4.x + Nuxt UI + Zod.
 - Langue des artefacts techniques: les identifiants techniques doivent etre en anglais pour tout artefact oriente code (exemples: noms de champs, schemas, tags OpenAPI, payloads, noms d'entites, noms d'endpoints). La narration documentaire peut rester en francais.
 - API: endpoints Nuxt server routes en priorité, avec séparation claire des couches.
 - Données: Supabase est le choix par défaut si les contraintes de sécurité,
@@ -120,4 +129,4 @@ Toute modification doit:
 Une revue de conformité doit être effectuée pour chaque feature à la création du plan,
 à la génération des tâches, puis avant livraison.
 
-**Version**: 1.2.0 | **Ratified**: 2026-04-25 | **Last Amended**: 2026-04-25
+**Version**: 1.3.0 | **Ratified**: 2026-04-25 | **Last Amended**: 2026-04-26

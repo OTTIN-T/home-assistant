@@ -15,7 +15,9 @@
     "format": "pnpm -r format",
     "format:check": "pnpm -r format:check",
     "test": "pnpm -r test",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "pwa:validate": "pnpm --filter user-web pwa:validate",
+    "pwa:assets": "pnpm --filter user-web pwa:assets"
   },
   "devDependencies": {
     "oxfmt": "^0.46.0",

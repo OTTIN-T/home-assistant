@@ -7,6 +7,9 @@ import { NotificationDispatchService } from "./notification-dispatch.service";
 import { UserProfileService } from "./user-profile.service";
 import { WidgetConfigurationService } from "./widget-configuration.service";
 import { createRuntimeStore, type RuntimeStore } from "./runtime-store";
+import { createPwaCachePolicyService } from "./pwa-cache-policy.service";
+import { createPwaOperationalLogService } from "./pwa-operational-log.service";
+import { createPwaLifecycleService } from "./pwa-lifecycle.service";
 
 export function createRuntimeDeps(store: RuntimeStore = createRuntimeStore()) {
   const eventPriorityService = new EventPriorityService();
@@ -14,6 +17,9 @@ export function createRuntimeDeps(store: RuntimeStore = createRuntimeStore()) {
     store.pushSubscriptions,
     eventPriorityService
   );
+  const pwaCachePolicyService = createPwaCachePolicyService();
+  const pwaOperationalLogService = createPwaOperationalLogService();
+  const pwaLifecycleService = createPwaLifecycleService();
 
   return {
     store,
@@ -24,6 +30,9 @@ export function createRuntimeDeps(store: RuntimeStore = createRuntimeStore()) {
     widgetConfigurationService: new WidgetConfigurationService(store.widgets),
     behaviorRuleService: new BehaviorRuleService(store.behaviorRules, store.profiles),
     eventPriorityService,
-    notificationDispatchService
+    notificationDispatchService,
+    pwaCachePolicyService,
+    pwaOperationalLogService,
+    pwaLifecycleService
   };
 }

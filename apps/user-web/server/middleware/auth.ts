@@ -63,6 +63,20 @@ function shouldAuthenticate(requestPath: string): boolean {
   return requestPath !== "/api/v1/auth/session";
 }
 
+function auditAuthDenied(event: unknown, reason: string, details: Record<string, unknown>): void {
+  const requestPath = getRequestPath(event);
+  const method = (event as { node?: { req?: { method?: string } } }).node?.req?.method ?? "UNKNOWN";
+  const clientIp = (event as { node?: { req?: { socket?: { remoteAddress?: string } } } }).node?.req?.socket?.remoteAddress ?? "unknown";
+
+  console.warn("[Auth Audit] Access denied", {
+    reason,
+    path: requestPath,
+    method,
+    clientIp,
+    ...details
+  });
+}
+
 export default defineEventHandler(async (event) => {
   const requestPath = getRequestPath(event);
   if (!shouldAuthenticate(requestPath)) {
@@ -73,6 +87,10 @@ export default defineEventHandler(async (event) => {
   const deviceFingerprint = getHeaderValue(event, "x-device-fingerprint");
 
   if (!bearerToken || !deviceFingerprint) {
+    auditAuthDenied(event, "missing_auth_context", {
+      hasBearerToken: Boolean(bearerToken),
+      hasDeviceFingerprint: Boolean(deviceFingerprint)
+    });
     throw createError({ statusCode: 401, statusMessage: "Missing authentication context" });
   }
 
@@ -87,15 +105,22 @@ export default defineEventHandler(async (event) => {
   try {
     payload = decodeJwtPayload(bearerToken);
   } catch {
+    auditAuthDenied(event, "invalid_auth_token", {});
     throw createError({ statusCode: 401, statusMessage: "Invalid authentication token" });
   }
 
   const nowEpochSeconds = Math.floor(Date.now() / 1000);
   if (payload.exp && payload.exp < nowEpochSeconds) {
+    auditAuthDenied(event, "expired_auth_token", { exp: payload.exp, now: nowEpochSeconds });
     throw createError({ statusCode: 401, statusMessage: "Expired authentication token" });
   }
 
   if (payload.deviceFingerprint !== deviceFingerprint) {
+    auditAuthDenied(event, "device_not_authorized", {
+      tokenFingerprint: payload.deviceFingerprint,
+      requestFingerprint: deviceFingerprint,
+      deviceId: payload.deviceId
+    });
     throw createError({ statusCode: 403, statusMessage: "Device is not authorized" });
   }
 

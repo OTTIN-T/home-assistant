@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 Pour le contexte complémentaire sur les technologies utilisées, la structure du projet,
 les commandes shell et les autres informations importantes, lire le plan courant :
-./specs/001-pilotage-domotique-web/plan.md
+./specs/002-configurer-nuxt-pwa/plan.md
 <!-- SPECKIT END -->
 
 # Instructions Workspace Speckit Home Assistant
@@ -56,7 +56,7 @@ Les fonctions utilitaires partagées sont dans [./.specify/scripts/powershell/co
 
 ## Contraintes produit (constitution)
 
-- Stack cible par défaut : Vue 3 + Nuxt 3 + Nuxt UI.
+- Stack cible par défaut : Vue 3 + Nuxt 4.x + Nuxt UI.
 - Tout code applicatif doit être strictement typé (TypeScript strict), y compris les contrats API.
 - Architecture composants obligatoire :
 	- `components/bases`

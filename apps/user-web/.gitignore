@@ -1,0 +1,31 @@
+# Node/TypeScript
+node_modules/
+dist/
+build/
+.nitro/
+.output/
+coverage/
+*.log
+.env*
+
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Editors/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+
+# Local tooling
+pnpm-lock.yaml
+playwright-report/
+test-results/
+.oxlintcache

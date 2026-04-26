@@ -1,6 +1,7 @@
 <!-- SPECKIT START -->
 Pour le contexte complémentaire sur les technologies utilisées, la structure du projet,
-les commandes shell et les autres informations importantes, lire le plan courant
+les commandes shell et les autres informations importantes, lire le plan courant :
+./specs/001-pilotage-domotique-web/plan.md
 <!-- SPECKIT END -->
 
 # Instructions Workspace Speckit Home Assistant

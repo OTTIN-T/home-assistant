@@ -1,0 +1,21 @@
+version: 1
+name: availability-burn-rate
+slo:
+  objective: 0.999
+  period: 30d
+alerts:
+  - id: availability-burnrate-fast
+    severity: critical
+    window: 1h
+    condition: burn_rate > 2.0
+    description: Burn-rate rapide superieur a 2x le budget d'erreur
+  - id: availability-burnrate-sustained
+    severity: warning
+    window: 6h
+    condition: burn_rate > 1.0
+    description: Burn-rate soutenu superieur au budget d'erreur
+  - id: availability-monthly-slo-risk
+    severity: warning
+    window: 24h
+    condition: projected_monthly_availability < 0.999
+    description: Projection de disponibilite mensuelle sous l'objectif 99.9%
